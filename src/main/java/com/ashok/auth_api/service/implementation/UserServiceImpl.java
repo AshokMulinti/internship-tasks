@@ -1,9 +1,6 @@
 package com.ashok.auth_api.service.implementation;
 
-import com.ashok.auth_api.dto.LoginRequestDTO;
-import com.ashok.auth_api.dto.LoginResponseDTO;
-import com.ashok.auth_api.dto.SignupRequestDTO;
-import com.ashok.auth_api.dto.SignupResponseDTO;
+import com.ashok.auth_api.dto.*;
 import com.ashok.auth_api.exceptions.InvalidSignupDataException;
 import com.ashok.auth_api.exceptions.UserAlreadyExistsException;
 import com.ashok.auth_api.model.User;
@@ -27,6 +24,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -178,4 +177,66 @@ public class UserServiceImpl implements UserService {
         String message = String.format("Successfully registered: %d, Skipped: %d", successCount, skippedCount);
         return responseHandler.success(null, message, HttpStatusCodes.OK);
     }
+    @Override
+    public ApiResponse<List<UserResponseDTO>> getDashboardData(String authHeader){
+        if(authHeader != null && authHeader.startsWith("Bearer ")){
+            String token = authHeader.substring(7);
+            if(jwtUtil.validateToken(token)){
+                List<User> userList = userRepository.findAll();
+                List<UserResponseDTO> dtoList = new ArrayList<>();
+                for(User user : userList){
+                    UserResponseDTO dto = new UserResponseDTO(
+                        user.getId(),user.getUsername(),user.getEmail(),user.getPassword()
+                    );
+                    dtoList.add(dto);
+                }
+                return responseHandler.success(dtoList,"Fetched all users",HttpStatusCodes.OK);
+            }
+        }
+        return responseHandler.error("Invalid or missing token",HttpStatusCodes.UNAUTHORIZED);
+    }
+
+    @Override
+    public ApiResponse<DeleteUserResponseDTO> deleteUser(Long id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            userRepository.deleteById(id);
+            DeleteUserResponseDTO dto = new DeleteUserResponseDTO(user.getId(), user.getUsername(), user.getEmail(), user.getPassword());
+            return responseHandler.success(dto, "User deleted successfully", HttpStatusCodes.OK);
+        }else{
+            return responseHandler.error("User not found with ID: " + id, HttpStatusCodes.NOT_FOUND);
+        }
+    }
+    @Override
+    public ApiResponse<EditUserResponseDTO> editUserById(Long id, EditUserRequestDTO dto) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isEmpty()) {
+            return responseHandler.error("User not found", HttpStatusCodes.NOT_FOUND);
+        }
+
+        User user = optionalUser.get();
+        user.setUsername(dto.username());
+        user.setEmail(dto.email());
+        user.setPassword(passwordEncoder.encode(dto.password())); // encode new password
+
+        User updatedUser = userRepository.save(user);
+
+        EditUserResponseDTO responseDTO = new EditUserResponseDTO(updatedUser.getId(), updatedUser.getUsername(), updatedUser.getEmail());
+
+        return responseHandler.success(responseDTO, "User updated successfully", HttpStatusCodes.OK);
+    }
+    @Override
+    public ApiResponse<ViewUserResponseDTO> getUserById(Long id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isEmpty()) {
+            return responseHandler.error("User not found", HttpStatusCodes.NOT_FOUND);
+        }
+
+        User user = optionalUser.get();
+        ViewUserResponseDTO dto = new ViewUserResponseDTO(user.getId(), user.getUsername(), user.getEmail());
+        return responseHandler.success(dto, "User fetched successfully", HttpStatusCodes.OK);
+    }
+
+
 }

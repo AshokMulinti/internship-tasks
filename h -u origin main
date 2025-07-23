@@ -1,0 +1,18 @@
+[33mcommit 7c33f1d57f596d46767b494c3dd49fd6f572c8b0[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Merge: ad17b75 669359d
+Author: Ashok <ashokreddy0096@gmail.com>
+Date:   Wed Jul 23 09:13:21 2025 +0530
+
+    Signup, login, and upload functionality for Excel/CSV to register multiple users
+
+[33mcommit ad17b7586cedd81b288668d79d6f5f95463f25f7[m
+Author: Ashok <ashokreddy0096@gmail.com>
+Date:   Wed Jul 23 09:01:27 2025 +0530
+
+    Initial commit - Internship tasks
+
+[33mcommit 669359d443078fc24a483df780a01e2751fe40fe[m
+Author: AshokMulinti <141040333+AshokMulinti@users.noreply.github.com>
+Date:   Wed Jul 23 08:50:20 2025 +0530
+
+    Initial commit
