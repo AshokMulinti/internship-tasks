@@ -1,9 +1,6 @@
 package com.ashok.auth_api.controller;
 
-import com.ashok.auth_api.dto.LoginRequestDTO;
-import com.ashok.auth_api.dto.LoginResponseDTO;
-import com.ashok.auth_api.dto.SignupRequestDTO;
-import com.ashok.auth_api.dto.SignupResponseDTO;
+import com.ashok.auth_api.dto.*;
 import com.ashok.auth_api.security.JwtUtil;
 import com.ashok.auth_api.service.interfaces.UserService;
 import com.ashok.auth_api.utils.ApiResponse;
@@ -14,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 
 
 @RestController
@@ -37,15 +35,9 @@ public class UserController {
     }
 
     @GetMapping("/dashboard")
-    public ResponseEntity<String> dashboard(@RequestHeader("Authorization") String authHeader) {
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-            if (jwtUtil.validateToken(token)) {
-                String username = jwtUtil.extractUsername(token);
-                return ResponseEntity.ok("Welcome to dashboard, " + username);
-            }
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or missing token");
+    public ResponseEntity<ApiResponse<List<UserResponseDTO>>> dashboard(@RequestHeader("Authorization") String authHeader) {
+        ApiResponse<List<UserResponseDTO>> response = userService.getDashboardData(authHeader);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     //@PostMapping("/upload-excel")
@@ -61,5 +53,22 @@ public class UserController {
         ApiResponse<String> response = userService.registerUsersFromCSV(file);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<ApiResponse<DeleteUserResponseDTO>> deleteUser(@PathVariable Long id){
+        ApiResponse<DeleteUserResponseDTO> response = userService.deleteUser(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+    @PutMapping("/users/{id}")
+    public ResponseEntity<ApiResponse<EditUserResponseDTO>> editUser(@PathVariable Long id,
+                                                                     @RequestBody EditUserRequestDTO dto) {
+        ApiResponse<EditUserResponseDTO> response = userService.editUserById(id, dto);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+    @GetMapping("/users/{id}")
+    public ResponseEntity<ApiResponse<ViewUserResponseDTO>> getUserById(@PathVariable Long id) {
+        ApiResponse<ViewUserResponseDTO> response = userService.getUserById(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
 
 }
