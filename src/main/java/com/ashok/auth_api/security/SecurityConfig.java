@@ -17,8 +17,10 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/index.html", "/dashboard.html", "/js/**", "/css/**", "/images/**").permitAll()
-                        .requestMatchers("/api/signup", "/api/login","/api/upload-excel","/api/upload-csv", "/swagger-ui/**", "/v3/api-docs/**","/api/users/{id}").permitAll()
+                        //.requestMatchers("/", "/index.html", "/dashboard.html", "/js/**", "/css/**", "/images/**").permitAll()
+                       // .requestMatchers("/api/signup", "/api/login","/api/upload-excel","/api/upload-csv", "/swagger-ui/**", "/v3/api-docs/**","/api/users/{id}").permitAll()
+                        .requestMatchers("/api/signup", "/api/login", "/swagger-ui/**",
+                                "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
