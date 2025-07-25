@@ -81,6 +81,14 @@ public class UserController {
         ApiResponse<ViewUserResponseDTO> response = userService.getUserById(id);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
+    @PatchMapping("/users/{id}")
+    @Operation(summary = "Patch user", description = "Partially updates user information by ID.")
+    public ResponseEntity<ApiResponse<EditUserResponseDTO>> patchUser(
+            @PathVariable Long id,
+            @RequestBody PatchUserRequestDTO dto) {
 
+        ApiResponse<EditUserResponseDTO> response = userService.patchUserById(id, dto);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
 
 }

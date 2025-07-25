@@ -18,4 +18,6 @@ public interface UserService {
     ApiResponse<EditUserResponseDTO> editUserById(Long id, EditUserRequestDTO dto);
 
     ApiResponse<ViewUserResponseDTO> getUserById(Long id);
+    ApiResponse<EditUserResponseDTO> patchUserById(Long id, PatchUserRequestDTO dto);
+
 }

@@ -237,6 +237,34 @@ public class UserServiceImpl implements UserService {
         ViewUserResponseDTO dto = new ViewUserResponseDTO(user.getId(), user.getUsername(), user.getEmail());
         return responseHandler.success(dto, "User fetched successfully", HttpStatusCodes.OK);
     }
+    @Override
+    public ApiResponse<EditUserResponseDTO> patchUserById(Long id, PatchUserRequestDTO dto) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isEmpty()) {
+            return responseHandler.error("User not found", HttpStatusCodes.NOT_FOUND);
+        }
+
+        User user = optionalUser.get();
+
+        if (dto.username() != null && !dto.username().isBlank()) {
+            user.setUsername(dto.username());
+        }
+
+        if (dto.email() != null && !dto.email().isBlank()) {
+            user.setEmail(dto.email());
+        }
+
+        if (dto.password() != null && !dto.password().isBlank()) {
+            user.setPassword(passwordEncoder.encode(dto.password()));
+        }
+
+        User updatedUser = userRepository.save(user);
+        EditUserResponseDTO responseDTO = new EditUserResponseDTO(
+                updatedUser.getId(), updatedUser.getUsername(), updatedUser.getEmail()
+        );
+
+        return responseHandler.success(responseDTO, "User patched successfully", HttpStatusCodes.OK);
+    }
 
 
 }
